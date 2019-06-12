@@ -12,6 +12,7 @@ public interface ApiService {
 
         @GET("list/after/{id}")
         Call<PhotoItemCollection> loadPhotolistAfterId(@Path("id")int id);
+
         @GET("list/before/{id}")
         Call<PhotoItemCollection> loadPhotolistBeforeId(@Path("id")int id);
 }

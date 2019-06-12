@@ -5,7 +5,9 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
+import android.widget.ProgressBar;
 
+import com.example.liveat500px.DataType.MutableInteger;
 import com.example.liveat500px.R;
 import com.example.liveat500px.dao.PhotoItemCollection;
 import com.example.liveat500px.dao.PhotoItemDao;
@@ -14,7 +16,12 @@ import com.example.liveat500px.view.PhotoListItem;
 public class PhotoListAdapter extends BaseAdapter {
 
     PhotoItemCollection dao;
-    int lastPosition = -1;
+
+    MutableInteger lastPositionInteger;
+
+    public PhotoListAdapter(MutableInteger lastPositionInteger) {
+        this.lastPositionInteger = lastPositionInteger;
+    }
 
     public void setDao(PhotoItemCollection dao) {
         this.dao = dao;
@@ -23,10 +30,10 @@ public class PhotoListAdapter extends BaseAdapter {
     @Override
     public int getCount() {
         if (dao == null)
-            return 0;
+            return 1;
         if (dao.getData() == null)
-            return 0;
-        return dao.getData().size();
+            return 1;
+        return dao.getData().size()+1;
     }
 
     @Override
@@ -39,7 +46,17 @@ public class PhotoListAdapter extends BaseAdapter {
 
         return 0;
     }
-      // use singleton
+
+    @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position == getCount()-1? 1:0;
+    }
+    // use singleton
 //    @Override
 //    public int getCount() {
 //        if (PhotoListManagerOld.getDao() == null)
@@ -73,6 +90,17 @@ public class PhotoListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 //        if(getItemViewType(position)==0) {
+        if(position == getCount()-1){
+            ProgressBar item;
+            if(convertView != null){
+                item = (ProgressBar) convertView;
+            }
+            else {
+                item = new ProgressBar(parent.getContext());
+            }
+            return item;
+        }
+
         PhotoListItem item;
         if (convertView != null) {
             item = (PhotoListItem) convertView;
@@ -83,11 +111,12 @@ public class PhotoListAdapter extends BaseAdapter {
         item.setNameText(dao.getCaption());
         item.setDescriptionText(dao.getUserName() + "\n" + dao.getCamera());
         item.setImageUrl(dao.getImageUrl());
-        if(position > lastPosition ) {
+
+        if(position > lastPositionInteger.getValue() ) {
             Animation anim = AnimationUtils.loadAnimation(parent.getContext(),
                     R.anim.up_from_bottom);
             item.startAnimation(anim);
-            lastPosition=position;
+            lastPositionInteger.setValue(position);
         }
 
         return item;
@@ -104,6 +133,6 @@ public class PhotoListAdapter extends BaseAdapter {
 //        }
     }
     public void increaseLastPosition(int amount){
-        lastPosition += amount;
+        lastPositionInteger.setValue(lastPositionInteger.getValue()+amount);
     }
 }
