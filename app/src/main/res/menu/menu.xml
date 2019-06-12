@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/share"
+        android:title="xx"
+        app:actionProviderClass="android.support.v7.widget.ShareActionProvider"
+        app:showAsAction="always"/>
+    <!--<item android:id="@+id/setting"-->
+        <!--android:title="Setting"-->
+        <!--app:showAsAction="always"-->
+        <!--/>-->
+    <!--<item android:id="@+id/setting2"-->
+        <!--android:title="Setting2"-->
+        <!--app:showAsAction="ifRoom"-->
+        <!--/>-->
+    <!--<item android:id="@+id/setting3"-->
+        <!--android:title="Setting3"-->
+        <!--app:showAsAction="never"-->
+        <!--/>-->
+</menu>

@@ -1,5 +1,8 @@
 package com.example.liveat500px.flagment;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,14 +15,18 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.liveat500px.DataType.MutableInteger;
 import com.example.liveat500px.R;
+import com.example.liveat500px.activity.MainActivity;
+import com.example.liveat500px.activity.MoreInfoActivity;
 import com.example.liveat500px.adapter.PhotoListAdapter;
 import com.example.liveat500px.dao.PhotoItemCollection;
+import com.example.liveat500px.dao.PhotoItemDao;
 import com.example.liveat500px.manager.HttpManager;
 import com.example.liveat500px.manager.PhotoListManager;
 import com.inthecheesefactory.thecheeselibrary.manager.Contextor;
@@ -34,6 +41,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainFragment extends Fragment {
+
+    public interface FragmentListener {
+        void onPhotoClickListener(PhotoItemDao dao);
+    }
 
     ListView listView;
     PhotoListAdapter listAdapter;
@@ -82,20 +93,20 @@ public class MainFragment extends Fragment {
     private void init(Bundle savedInstanceState) {
         photoListManager = new PhotoListManager();
         lastPositionInteger = new MutableInteger(-1);
-
-        File dir = getContext().getFilesDir();
-        Log.d("fileTest",String.valueOf(dir));
-        File file = new File(dir,"testfile.txt");
-        FileOutputStream fileOutputStream = null;
-        try {
-            fileOutputStream = new FileOutputStream(file);
-            fileOutputStream.write("Hello".getBytes());
-            fileOutputStream.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        //File
+//        File dir = getContext().getFilesDir();
+//        Log.d("fileTest",String.valueOf(dir));
+//        File file = new File(dir,"testfile.txt");
+//        FileOutputStream fileOutputStream = null;
+//        try {
+//            fileOutputStream = new FileOutputStream(file);
+//            fileOutputStream.write("Hello".getBytes());
+//            fileOutputStream.close();
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
     }
 
@@ -110,6 +121,7 @@ public class MainFragment extends Fragment {
         listAdapter = new PhotoListAdapter(lastPositionInteger);
         listAdapter.setDao(photoListManager.getDao());
         listView.setAdapter(listAdapter);
+        listView.setOnItemClickListener(listVireItemClickListener);
 
         swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(pullToRefreshListener);
@@ -219,6 +231,19 @@ public class MainFragment extends Fragment {
     /*************
      * listener Zone
      *************/
+    AdapterView.OnItemClickListener listVireItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent,
+                                View view,
+                                int position,
+                                long id) {
+            if (position < photoListManager.getCount()) {
+                PhotoItemDao dao = photoListManager.getDao().getData().get(position);
+                FragmentListener listener = (FragmentListener) getActivity();
+                listener.onPhotoClickListener(dao);
+            }
+        }
+    };
 
     final View.OnClickListener btnClickListener = new View.OnClickListener() {
         @Override
